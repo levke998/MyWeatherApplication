@@ -10,9 +10,12 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
-import android.location.Location
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationResult
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
@@ -47,9 +50,9 @@ class MainActivity : AppCompatActivity() {
     private val forecastAdapter by lazy {  ForecastAdapter()}
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
     private val permissionId = 2
-    private var lat = intent.getDoubleExtra("lat", 0.0)
-    private var lon = intent.getDoubleExtra("lon", 0.0)
-    private var name = intent.getStringExtra("name")
+    private var lat =0.0
+    private var lon =0.0
+    private var name = "-"
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,6 +60,7 @@ class MainActivity : AppCompatActivity() {
         binding=ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        getLocation()
 
         window.apply {
             addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
@@ -64,14 +68,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.apply {
-
-
-
-
             lat = intent.getDoubleExtra("lat", 0.0)
             lon = intent.getDoubleExtra("lon", 0.0)
-            name = intent.getStringExtra("name")
-
+            name = intent.getStringExtra("name").toString()
 
             if (lat == 0.0) {
                 lat = 51.50
@@ -84,6 +83,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             cityTxt.text = name
+
 
             progressBar.visibility=View.VISIBLE
             weatherViewModel.loadCurrentWeather(lat,lon,"metric").enqueue(object :
@@ -232,20 +232,34 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    @SuppressLint("MissingPermission", "SetTextI18n")
+    @SuppressLint("MissingPermission")
     private fun getLocation() {
         if (checkPermissions()) {
             if (isLocationEnabled()) {
-                mFusedLocationClient.lastLocation.addOnCompleteListener(this) { task ->
-                    val location: Location? = task.result
-                    if (location != null) {
-                        val geocoder = Geocoder(this, Locale.getDefault())
-                        val list: MutableList<Address>? = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-                        lat = list?.get(0)?.latitude!!
-                        lon = list?.get(0)?.longitude!!
-                        name = list?.get(0)?.countryName
+                val locationRequest = LocationRequest.create().apply {
+                    interval = 5000 // 5 másodpercenként frissít
+                    fastestInterval = 2000 // 2 másodperc a leggyorsabb frissítés
+                    priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+                }
+
+                val locationCallback = object : LocationCallback() {
+                    override fun onLocationResult(locationResult: LocationResult) {
+                        val location = locationResult.lastLocation
+                        if (location != null) {
+                            lat = location.latitude
+                            lon = location.longitude
+                            Toast.makeText(this@MainActivity, "Updated Location: $lat, $lon", Toast.LENGTH_SHORT).show()
+                            binding.cityTxt.text = getCityName(lat, lon) // A város neve is frissül
+
+                            // Leiratkozunk a további frissítésekről
+                            mFusedLocationClient.removeLocationUpdates(this)
+                        } else {
+                            Toast.makeText(this@MainActivity, "Error: Location is still null.", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
+
+                mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
             } else {
                 Toast.makeText(this, "Please turn on location", Toast.LENGTH_LONG).show()
                 val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
@@ -254,6 +268,13 @@ class MainActivity : AppCompatActivity() {
         } else {
             requestPermissions()
         }
+    }
+
+    // A városnév lekérdezése Geocoder segítségével
+    private fun getCityName(lat: Double, lon: Double): String {
+        val geocoder = Geocoder(this, Locale.getDefault())
+        val addresses: List<Address>? = geocoder.getFromLocation(lat, lon, 1)
+        return addresses?.get(0)?.locality ?: "Unknown location"
     }
     private fun isLocationEnabled(): Boolean {
         val locationManager: LocationManager =
