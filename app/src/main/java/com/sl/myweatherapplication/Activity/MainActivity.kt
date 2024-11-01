@@ -2,6 +2,16 @@
 
 package com.sl.myweatherapplication.Activity
 
+
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
+import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -10,8 +20,11 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.matteobattilana.weather.PrecipType
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.sl.myweatherapplication.Adapter.ForecastAdapter
 import com.sl.myweatherapplication.R
 import com.sl.myweatherapplication.ViewModel.WeatherViewModel
@@ -22,31 +35,53 @@ import eightbitlab.com.blurview.RenderScriptBlur
 import retrofit2.Call
 import retrofit2.Response
 import java.util.Calendar
+import java.util.*
+import android.provider.Settings
 
 
 class MainActivity : AppCompatActivity() {
+
     lateinit var binding: ActivityMainBinding
     private val weatherViewModel:WeatherViewModel by viewModels()
     private val calendar by lazy { Calendar.getInstance() }
     private val forecastAdapter by lazy {  ForecastAdapter()}
+    private lateinit var mFusedLocationClient: FusedLocationProviderClient
+    private val permissionId = 2
+    private var lat = intent.getDoubleExtra("lat", 0.0)
+    private var lon = intent.getDoubleExtra("lon", 0.0)
+    private var name = intent.getStringExtra("name")
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
-
         binding=ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         window.apply {
             addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
             //statusBarColor = Color.TRANSPARENT
-
         }
 
         binding.apply {
-            var lat = 51.50
-            var lon = -0.12
-            var name = "London"
+
+
+
+
+            lat = intent.getDoubleExtra("lat", 0.0)
+            lon = intent.getDoubleExtra("lon", 0.0)
+            name = intent.getStringExtra("name")
+
+
+            if (lat == 0.0) {
+                lat = 51.50
+                lon = -0.12
+                name = "London"
+            }
+
+            addCity.setOnClickListener{
+                startActivity(Intent(this@MainActivity, CityListActivity::class.java))
+            }
 
             cityTxt.text = name
 
@@ -63,7 +98,7 @@ class MainActivity : AppCompatActivity() {
                         detailLayout.visibility=View.VISIBLE
                         data?.let{
                             statusTxt.text=it.weather?.get(0)?.main ?: "-"
-                            windTxt.text=it.wind?.speed?.let { Math.round(it).toString() }+"Km"
+                            windTxt.text=it.wind?.speed?.let { Math.round(it).toString() }+" km/h"
                             hummidityTxt.text = it.main?.humidity?.toString()+"%"
                             currentTempTxt.text=it.main?.temp?.let{Math.round(it).toString()}+"°"
                             maxTempTxt.text=it.main?.tempMax?.let{Math.round(it).toString()}+"°"
@@ -79,20 +114,16 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 }
-
                 override fun onFailure(call: Call<CurrentResponseApi>, t: Throwable) {
                     Toast.makeText(this@MainActivity, t.toString(), Toast.LENGTH_SHORT).show()
                 }
-
             })
 
             //Blue view
-
             var radius = 10f
             val decorView = window.decorView
             val rootView = (decorView.findViewById(android.R.id.content) as ViewGroup?)
             val windowBackground = decorView.background
-
             rootView?.let{
                 blueView.setupWith(it, RenderScriptBlur(this@MainActivity))
                     .setFrameClearDrawable(windowBackground)
@@ -102,7 +133,6 @@ class MainActivity : AppCompatActivity() {
             }
 
             //Forecast
-
             weatherViewModel.loadForecastWeather(lat,lon, "metric").enqueue(object : retrofit2.Callback<ForecastResponseApi>{
                 override fun onResponse(
                     call: Call<ForecastResponseApi>,
@@ -127,16 +157,14 @@ class MainActivity : AppCompatActivity() {
                 }
                 override fun onFailure(call: Call<ForecastResponseApi>, t: Throwable) {
 
+
+
+
+
+
                 }
-
             })
-
-
-
-
-
         }
-
     }
     private  fun isNight():Boolean{
         return calendar.get(Calendar.HOUR_OF_DAY)>=18
@@ -145,7 +173,7 @@ class MainActivity : AppCompatActivity() {
         return when(icon.dropLast(1)){
             "01" -> {
                 initWeatherView(PrecipType.CLEAR)
-                R.drawable.snow_bg
+                R.drawable.sunny_bg
             }
             "02","03","04" -> {
                 initWeatherView(PrecipType.CLEAR)
@@ -202,4 +230,73 @@ class MainActivity : AppCompatActivity() {
             emissionRate=100.0f
         }
     }
+
+
+    @SuppressLint("MissingPermission", "SetTextI18n")
+    private fun getLocation() {
+        if (checkPermissions()) {
+            if (isLocationEnabled()) {
+                mFusedLocationClient.lastLocation.addOnCompleteListener(this) { task ->
+                    val location: Location? = task.result
+                    if (location != null) {
+                        val geocoder = Geocoder(this, Locale.getDefault())
+                        val list: MutableList<Address>? = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+                        lat = list?.get(0)?.latitude!!
+                        lon = list?.get(0)?.longitude!!
+                        name = list?.get(0)?.countryName
+                    }
+                }
+            } else {
+                Toast.makeText(this, "Please turn on location", Toast.LENGTH_LONG).show()
+                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                startActivity(intent)
+            }
+        } else {
+            requestPermissions()
+        }
+    }
+    private fun isLocationEnabled(): Boolean {
+        val locationManager: LocationManager =
+            getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+            LocationManager.NETWORK_PROVIDER
+        )
+    }
+    private fun checkPermissions(): Boolean {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            return true
+        }
+        return false
+    }
+    private fun requestPermissions() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ),
+            permissionId
+        )
+    }
+    @SuppressLint("MissingSuperCall")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == permissionId) {
+            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                getLocation()
+            }
+        }
+    }
+
 }

@@ -54,6 +54,10 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.play.services.location)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -72,12 +76,12 @@ dependencies {
 
     //LifeCycle
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
 
     //Gson
-    implementation("com.google.code.gson:gson:2.9.1")
+    implementation("com.google.code.gson:gson:2.10.1")
 
     //Other
     implementation("com.github.MatteoBattilana:WeatherView:3.0.0")
@@ -87,10 +91,10 @@ dependencies {
     implementation("com.github.Dimezis:BlurView:version-2.0.5")
     implementation("com.github.bumptech.glide:glide:4.16.0")
 
-    implementation("androidx.compose.material3:material3:1.3.0")
-    implementation("androidx.compose.material3:material3-window-size-class:1.3.0")
-    implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.4.0-alpha02")
-    implementation("com.google.android.material:material:1.11.0-alpha01")
+    implementation("androidx.compose.material3:material3:1.3.1")
+    implementation("androidx.compose.material3:material3-window-size-class:1.3.1")
+    implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.4.0-alpha03")
+    implementation("com.google.android.material:material:1.12.0")
 }
 kapt{
     correctErrorTypes = true
