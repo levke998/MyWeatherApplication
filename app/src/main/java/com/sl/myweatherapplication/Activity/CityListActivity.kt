@@ -1,18 +1,15 @@
 package com.sl.myweatherapplication.Activity
 
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.WindowManager
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sl.myweatherapplication.Adapter.CityAdapter
-import com.sl.myweatherapplication.R
 import com.sl.myweatherapplication.ViewModel.CityViewModel
 import com.sl.myweatherapplication.databinding.ActivityCityListBinding
 import com.sl.myweatherapplication.model.CityResponseApi
@@ -32,7 +29,7 @@ class CityListActivity : AppCompatActivity() {
 
         window.apply {
             addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            //statusBarColor = Color.TRANSPARENT
+            statusBarColor = Color.TRANSPARENT
 
         }
 
