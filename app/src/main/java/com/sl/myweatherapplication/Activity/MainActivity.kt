@@ -8,6 +8,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Address
 import android.location.Geocoder
 import com.google.android.gms.location.LocationRequest
@@ -60,11 +61,11 @@ class MainActivity : AppCompatActivity() {
         binding=ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        getLocation()
+
 
         window.apply {
             addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            //statusBarColor = Color.TRANSPARENT
+            statusBarColor = Color.TRANSPARENT
         }
 
         binding.apply {
@@ -73,9 +74,7 @@ class MainActivity : AppCompatActivity() {
             name = intent.getStringExtra("name").toString()
 
             if (lat == 0.0) {
-                lat = 51.50
-                lon = -0.12
-                name = "London"
+                getLocation()
             }
 
             addCity.setOnClickListener{
@@ -84,42 +83,8 @@ class MainActivity : AppCompatActivity() {
 
             cityTxt.text = name
 
-
             progressBar.visibility=View.VISIBLE
-            weatherViewModel.loadCurrentWeather(lat,lon,"metric").enqueue(object :
-                retrofit2.Callback<CurrentResponseApi> {
-                override fun onResponse(
-                    call: Call<CurrentResponseApi>,
-                    response: Response<CurrentResponseApi>
-                ) {
-                    if (response.isSuccessful){
-                        val data = response.body()
-                        progressBar.visibility = View.GONE
-                        detailLayout.visibility=View.VISIBLE
-                        data?.let{
-                            statusTxt.text=it.weather?.get(0)?.main ?: "-"
-                            windTxt.text=it.wind?.speed?.let { Math.round(it).toString() }+" km/h"
-                            hummidityTxt.text = it.main?.humidity?.toString()+"%"
-                            currentTempTxt.text=it.main?.temp?.let{Math.round(it).toString()}+"°"
-                            maxTempTxt.text=it.main?.tempMax?.let{Math.round(it).toString()}+"°"
-                            minTempTxt.text=it.main?.tempMin?.let{Math.round(it).toString()}+"°"
-                            pressureTxt.text=it.main?.pressure?.toString()+" hPa"
-                            feelsTxt.text=it.main?.feelsLike?.let{Math.round(it).toString()}+"°"
-
-                            val drawable = if(isNight()) {R.drawable.night_bg}
-                            else{
-                                setDinamicallyWallpaper(it.weather?.get(0)?.icon?:"-")
-                            }
-                            bgImage.setImageResource(drawable)
-                            setEffectRainSnow(it.weather?.get(0)?.icon?:"-")
-
-                        }
-                    }
-                }
-                override fun onFailure(call: Call<CurrentResponseApi>, t: Throwable) {
-                    Toast.makeText(this@MainActivity, t.toString(), Toast.LENGTH_SHORT).show()
-                }
-            })
+            loadDatas(lat,lon,"metric")
 
             //Blue view
             var radius = 10f
@@ -133,39 +98,6 @@ class MainActivity : AppCompatActivity() {
                 blueView.outlineProvider=ViewOutlineProvider.BACKGROUND
                 blueView.clipToOutline = true
             }
-
-            //Forecast
-            weatherViewModel.loadForecastWeather(lat,lon, "metric").enqueue(object : retrofit2.Callback<ForecastResponseApi>{
-                override fun onResponse(
-                    call: Call<ForecastResponseApi>,
-                    response: Response<ForecastResponseApi>
-                ) {
-                    if (response.isSuccessful){
-                        val data = response.body()
-                        blueView.visibility = View.VISIBLE
-
-                        data?.let {
-                            forecastAdapter.differ.submitList(it.list)
-                            forecastView.apply {
-                                layoutManager=LinearLayoutManager(
-                                    this@MainActivity,
-                                    LinearLayoutManager.HORIZONTAL,
-                                    false
-                                )
-                                adapter = forecastAdapter
-                            }
-                        }
-                    }
-                }
-                override fun onFailure(call: Call<ForecastResponseApi>, t: Throwable) {
-
-
-
-
-
-
-                }
-            })
         }
     }
     private  fun isNight():Boolean{
@@ -233,6 +165,70 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun loadDatas(lat: Double, lon: Double, s: String) {
+        //Curent
+        weatherViewModel.loadCurrentWeather(this.lat, this.lon,"metric").enqueue(object :
+            retrofit2.Callback<CurrentResponseApi> {
+            override fun onResponse(
+                call: Call<CurrentResponseApi>,
+                response: Response<CurrentResponseApi>
+            ) {
+                if (response.isSuccessful){
+                    val data = response.body()
+                    binding.progressBar.visibility = View.GONE
+                    binding.detailLayout.visibility=View.VISIBLE
+                    data?.let{
+                        binding.statusTxt.text=it.weather?.get(0)?.main ?: "-"
+                        binding.windTxt.text=it.wind?.speed?.let { Math.round(it).toString() }+" km/h"
+                        binding.hummidityTxt.text = it.main?.humidity?.toString()+"%"
+                        binding.currentTempTxt.text=it.main?.temp?.let{Math.round(it).toString()}+"°"
+                        binding.maxTempTxt.text=it.main?.tempMax?.let{Math.round(it).toString()}+"°"
+                        binding.minTempTxt.text=it.main?.tempMin?.let{Math.round(it).toString()}+"°"
+                        binding.pressureTxt.text=it.main?.pressure?.toString()+" hPa"
+                        binding.feelsTxt.text=it.main?.feelsLike?.let{Math.round(it).toString()}+"°"
+
+                        val drawable = if(isNight()) {R.drawable.night_bg}
+                        else{
+                            setDinamicallyWallpaper(it.weather?.get(0)?.icon?:"-")
+                        }
+                        binding.bgImage.setImageResource(drawable)
+                        setEffectRainSnow(it.weather?.get(0)?.icon?:"-")
+                    }
+                }
+            }
+            override fun onFailure(call: Call<CurrentResponseApi>, t: Throwable) {
+                Toast.makeText(this@MainActivity, t.toString(), Toast.LENGTH_SHORT).show()
+            }
+        })
+        //Forecast
+        weatherViewModel.loadForecastWeather(lat,lon, "metric").enqueue(object : retrofit2.Callback<ForecastResponseApi>{
+            override fun onResponse(
+                call: Call<ForecastResponseApi>,
+                response: Response<ForecastResponseApi>
+            ) {
+                if (response.isSuccessful){
+                    val data = response.body()
+                    binding.blueView.visibility = View.VISIBLE
+
+                    data?.let {
+                        forecastAdapter.differ.submitList(it.list)
+                        binding.forecastView.apply {
+                            layoutManager=LinearLayoutManager(
+                                this@MainActivity,
+                                LinearLayoutManager.HORIZONTAL,
+                                false
+                            )
+                            adapter = forecastAdapter
+                        }
+                    }
+                }
+            }
+            override fun onFailure(call: Call<ForecastResponseApi>, t: Throwable) {
+                Toast.makeText(this@MainActivity, t.toString(), Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
 
     @SuppressLint("MissingPermission")
     private fun getLocation() {
@@ -252,9 +248,10 @@ class MainActivity : AppCompatActivity() {
                             lon = location.longitude
                             Toast.makeText(this@MainActivity, "Updated Location: $lat, $lon", Toast.LENGTH_SHORT).show()
                             binding.cityTxt.text = getCityName(lat, lon) // A város neve is frissül
-
+                            loadDatas(lat,lon, "metric")
                             // Leiratkozunk a további frissítésekről
                             mFusedLocationClient.removeLocationUpdates(this)
+
                         } else {
                             Toast.makeText(this@MainActivity, "Error: Location is still null.", Toast.LENGTH_SHORT).show()
                         }
