@@ -103,6 +103,8 @@ class MainActivity : AppCompatActivity() {
                             currentTempTxt.text=it.main?.temp?.let{Math.round(it).toString()}+"°"
                             maxTempTxt.text=it.main?.tempMax?.let{Math.round(it).toString()}+"°"
                             minTempTxt.text=it.main?.tempMin?.let{Math.round(it).toString()}+"°"
+                            pressureTxt.text=it.main?.pressure?.toString()+" hPa"
+                            feelsTxt.text=it.main?.feelsLike?.let{Math.round(it).toString()}+"°"
 
                             val drawable = if(isNight()) {R.drawable.night_bg}
                             else{
