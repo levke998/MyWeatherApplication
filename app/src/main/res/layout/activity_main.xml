@@ -16,6 +16,36 @@
         app:layout_constraintTop_toTopOf="@+id/weatherView"
         app:srcCompat="@drawable/sunny_bg" />
 
+    <Button
+        android:id="@+id/mapBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginBottom="16dp"
+        android:text="Térkép"
+        app:layout_constraintBottom_toBottomOf="@+id/bgImage"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/mainBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="Főoldal"
+        app:layout_constraintBottom_toBottomOf="@+id/bgImage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/extraBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp"
+        android:text="Karácsony"
+        app:layout_constraintBottom_toBottomOf="@+id/bgImage"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <com.github.matteobattilana.weather.WeatherView
         android:id="@+id/weatherView"
         android:layout_width="match_parent"
@@ -23,7 +53,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" >
+
+    </com.github.matteobattilana.weather.WeatherView>
 
     <ImageView
         android:id="@+id/addCity"
@@ -40,7 +72,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="64dp"
-        android:fontFamily="sans-serif-black"
+        android:fontFamily="sans-serif"
         android:shadowColor="@color/black"
         android:shadowDx="1"
         android:shadowDy="1"
@@ -240,7 +272,7 @@
         android:layout_height="143dp"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="80dp"
         android:background="@drawable/forecast_bg"
         android:visibility="gone"
         app:blurOverlayColor="#10ffffff"
@@ -290,6 +322,7 @@
                 android:id="@+id/imageView9"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:tint="#EFEFEF"
                 app:srcCompat="@drawable/thermometer" />
 
             <TextView
@@ -334,6 +367,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
+                android:tint="#FFFFFF"
                 app:srcCompat="@drawable/barometer" />
 
             <TextView

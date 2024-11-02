@@ -80,6 +80,10 @@ class MainActivity : AppCompatActivity() {
             addCity.setOnClickListener{
                 startActivity(Intent(this@MainActivity, CityListActivity::class.java))
             }
+            extraBtn.setOnClickListener{
+                startActivity(Intent(this@MainActivity, CountDownActivity::class.java))
+            }
+
 
             cityTxt.text = name
 

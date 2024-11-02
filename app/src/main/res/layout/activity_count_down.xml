@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="0dp"
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/christmass" />
+
+    <com.sl.myweatherapplication.ViewModel.CountdownRingView
+        android:id="@+id/countdownRingView"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_centerInParent="true" />
+
+    <LinearLayout
+        android:id="@+id/textLayout"
+        android:layout_width="match_parent"
+        android:layout_height="142dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="800dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/days"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="22dp">
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nap"
+                android:shadowColor="@color/purple_200"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="10"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/white"
+                android:textAlignment="center"
+                android:textSize="25dp"/>
+
+            <TextView
+                android:id="@+id/napTxt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="-"
+                android:shadowColor="@color/purple_200"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="10"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/white"
+                android:textAlignment="center"
+                android:textSize="25dp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/hours"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginLeft="22dp"
+            android:layout_marginRight="22dp">
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Óra"
+                android:shadowColor="#F3FF00"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="10"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/white"
+                android:textAlignment="center"
+                android:textSize="25dp"/>
+
+            <TextView
+                android:id="@+id/oraTxt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="-"
+                android:shadowColor="#F3FF00"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="10"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/white"
+                android:textAlignment="center"
+                android:textSize="25dp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/minutes"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginLeft="22dp"
+            android:layout_marginRight="22dp">
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Perc"
+                android:shadowColor="#0027FF"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="10"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/white"
+                android:textAlignment="center"
+                android:textSize="25dp"/>
+
+            <TextView
+                android:id="@+id/percTxt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="-"
+                android:shadowColor="#0027FF"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="10"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/white"
+                android:textAlignment="center"
+                android:textSize="25dp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/seconds"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="5dp">
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Másodperc"
+                android:shadowColor="#FF0000"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="10"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/white"
+                android:textAlignment="center"
+                android:textSize="25dp"
+                />
+
+            <TextView
+                android:id="@+id/masodpercTxt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="-"
+                android:shadowColor="#FF0000"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="10"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/white"
+                android:textAlignment="center"
+                android:textSize="25dp"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>
